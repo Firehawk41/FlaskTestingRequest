@@ -1,40 +1,74 @@
-// Adds a new row of sample fields
+// Adds a new row of sample fields to the form.
+// Each row includes sample ID, matrix, sample type selector, analysis selector, and processing time.
+// The analysis selector updates dynamically based on the chosen sample type.
 async function addSample() {
+  // Get the container for sample rows
   const sampleContainer = document.getElementById("samples");
   const index = sampleContainer.children.length;
 
+  // Create a new row for sample input fields
   const row = document.createElement("div");
   row.className = "sample-row";
 
-  // Build other inputs
+  // Sample ID input
   const sampleId = document.createElement("input");
   sampleId.name = "sample_id[]";
   sampleId.placeholder = "Sample ID";
   sampleId.required = true;
 
+  // Chemical matrix input
   const matrix = document.createElement("input");
   matrix.name = "chemical_matrix[]";
   matrix.placeholder = "Chemical Matrix";
   matrix.required = true;
 
+  // Sample type dropdown (chemical, water, wafer)
+  const sampleTypeSelect = document.createElement("select");
+  sampleTypeSelect.name="sample_type[]";
+  sampleTypeSelect.className = "sample-type-select";
+  const types = ["chemical", "water", "wafer"];
+  types.forEach(type => {
+    const option = document.createElement("option");
+    option.value = type;
+    option.textContent = type.charAt(0).toUpperCase() + type.slice(1); // Capitalize
+    sampleTypeSelect.appendChild(option);
+  });
+
+  // Processing time input
   const processingTime = document.createElement("input");
-  processingTime.name = "procesing_time[]";
+  processingTime.name = "processing_time[]";
   processingTime.placeholder = "Processing Time";
   processingTime.required = true;
 
-  // Build analysis dropdown from JSON
-  const analysisSelect = await createAnalysisDropdown(index);
+  // Create analysis dropdown based on sample type
+  let analysisSelect = await createAnalysisDropdown(index, sampleTypeSelect.value);
 
-  // Append inputs to row
+  // Append all inputs to the row
   row.appendChild(sampleId);
   row.appendChild(matrix);
+  row.appendChild(sampleTypeSelect);
   row.appendChild(analysisSelect);
   row.appendChild(processingTime);
 
-  // Add to form
+  // When sample type changes, update the analysis dropdown accordingly
+  sampleTypeSelect.addEventListener("change", async function () {
+    const newAnalysisSelect = await createAnalysisDropdown(index, this.value);
+    $(analysisSelect).select2("destroy");
+    analysisSelect.replaceWith(newAnalysisSelect);
+    $(newAnalysisSelect).select2({
+      placeholder: "Select analyses",
+      width: "100%",
+      allowClear: true
+    });
+    analysisSelect = newAnalysisSelect;
+  });
+
+
+
+  // Add the row to the form
   sampleContainer.appendChild(row);
 
-  // Activate Select2 for this dropdown
+  // Initialize Select2 for the analysis dropdown
   $(analysisSelect).select2({
     placeholder: "Select analyses",
     width: "100%",
@@ -42,31 +76,59 @@ async function addSample() {
   });
 }
 
-async function createAnalysisDropdown(index) {
-  const select = document.createElement("select");
-  select.name = `analysis[${index}][]`;
-  select.className = "analysis-select";
-  select.multiple = true;
+function filterAnalysesByType(data, sampleType) {
+  return data
+    .map(group => {
+      const filteredOptions = group.options.filter(opt =>
+        opt.sample_types.includes(sampleType)
+      );
+      if (filteredOptions.length > 0) {
+        return {
+          group: group.group,
+          options: filteredOptions
+        };
+      }
+      return null;
+    })
+    .filter(Boolean); // remove nulls
+}
 
-  const res = await fetch("/static/data/analyses.json");
-  const data = await res.json();
 
-  data.forEach(group => {
-    const optgroup = document.createElement("optgroup");
-    optgroup.label = group.group;
+async function createAnalysisDropdown(index, sampleType) {
+  try {
+    const response = await fetch("/static/data/analyses.json");
+    if (!response.ok) throw new Error("Failed to load analyses");
+    const allData = await response.json();
 
-    group.options.forEach(opt => {
-      const option = document.createElement("option");
-      option.value = opt.id;
-      option.textContent = opt.label;
-      option.title = opt.description;
-      optgroup.appendChild(option);
+    // Filter based on sample type
+    const filteredGroups = filterAnalysesByType(allData, sampleType);
+
+    // Create select element
+    const select = document.createElement("select");
+    select.name = `analysis[${index}][]`;
+    select.className = "analysis-select";
+    select.multiple = true;
+
+    // Populate with optgroups and options
+    filteredGroups.forEach(group => {
+      const optgroup = document.createElement("optgroup");
+      optgroup.label = group.group;
+
+      group.options.forEach(opt => {
+        const option = document.createElement("option");
+        option.value = opt.id;
+        option.textContent = opt.label;
+        option.title = opt.description;
+        optgroup.appendChild(option);
+      });
+
+      select.appendChild(optgroup);
     });
 
-    select.appendChild(optgroup);
-  });
-
-  return select;
+    return select;
+  } catch (err) {
+    alert("Error loading analyses: " + err.message);
+  }
 }
 
 // Handles form submission using Fetch API
@@ -94,26 +156,9 @@ document.getElementById("sampleForm").addEventListener("submit", async (e) => {
   alert(result.message || "Submitted successfully.");
 });
 
-document.addEventListener("DOMContentLoaded", function () {
-  $('.analysis-select').select2({
-    placeholder: "Select analyses",
-    width: '100%',
-    allowClear: true,
-    templateRseult: function (data) {
-      if (!data.id) return data.text; // For placeholder or group labels
-
-      // data.element is the original <option> DOM element
-      const description = $(data.element).attr('title') || '';
-
-      // Create a span with a title attribute for native browser tooltip
-      return $('<span>').text(data.text).attr('title', description);
-    }
-  });
-});
-
 // Creates first sample row when the page is first loaded
-document.addEventListener("DOMContentLoaded", function () {
-  addSample();  // create the first sample row
+document.addEventListener("DOMContentLoaded", async function () {
+  await addSample();  // create the first sample row
 });
 
 // Listener for Tagify functionality

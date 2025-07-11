@@ -1,16 +1,53 @@
 [
   {
-    "group": "Anion Panels",
+    "group": "Metals",
     "options": [
-      { "id": "5_anions", "label": "5 Anions", "description": "F-, Cl-, NO3-, SO4--, PO4---" },
-      { "id": "organic_anions", "label": "Organic Anions", "description": "Gluconate, Propionate..." }
+      {
+        "id": "36_elements",
+        "label": "36 Elements",
+        "description": "Al, As, Ba, Be, Cd, Cr, Cu, Fe, etc.",
+        "sample_types": ["chemical", "water", "wafer"]
+      },
+      {
+        "id": "trace_metals",
+        "label": "Trace Metals",
+        "description": "For low concentration detection.",
+        "sample_types": ["chemical", "wafer"]
+      }
     ]
   },
   {
-    "group": "Metals",
+    "group": "Organics",
     "options": [
-      { "id": "36_elements", "label": "36 Elements", "description": "Al, As, Ba, Cd..." },
-      { "id": "heavy_metals", "label": "Heavy Metals", "description": "Pb, Hg, Cr..." }
+      {
+        "id": "toc",
+        "label": "TOC",
+        "description": "Total Organic Carbon.",
+        "sample_types": ["water"]
+      },
+      {
+        "id": "voc",
+        "label": "Volatile Organics",
+        "description": "BTEX, benzene, etc.",
+        "sample_types": ["chemical"]
+      }
+    ]
+  },
+  {
+    "group": "Anions",
+    "options": [
+      {
+        "id": "5_anions",
+        "label": "5 Common Anions",
+        "description": "Cl⁻, SO₄²⁻, NO₃⁻, etc.",
+        "sample_types": ["chemical", "water"]
+      },
+      {
+        "id": "organic_anions",
+        "label": "Organic Anions",
+        "description": "Gluconate, propionate, butyrate.",
+        "sample_types": ["chemical"]
+      }
     ]
   }
 ]

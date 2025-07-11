@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PRECILAB Testing Request Form</title>
+  <!-- Link to your JS file -->
+  <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+  <!-- Select2 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+  <!-- jQuery (required) -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- Select2 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+</head>
+<body>
+  <h1>Testing Request Form</h1>
+
+  <form id="sampleForm">
+    <div class="form-row">
+      <label for="customer_name">Company:</label>
+      <input name="customer_name" placeholder="Company" required><br>
+    </div>
+    <div class="form-row">
+      <label for="street-address">Street Address:</label>
+      <input name="street-address" required><br>
+    </div>
+    <div class="form-row">
+      <label for="city">City:</label>
+      <input name="city" required><br>
+    </div>
+    <div class="form-row">
+      <label for="state">State:</label>
+      <input name="state" required><br>
+    </div>
+    <div class="form-row">
+      <label for="country">Country:</label>
+      <input name="country" placeholder="USA" required><br>
+    </div>
+
+    <div class="form-row">
+      <label for="customer-contact">Test requested by:</label>
+      <input name="customer-contact" required><br>
+    </div>
+    <div class="form-row">
+      <label for="customer-phone">Phone #:</label>
+      <input name="customer-phone" required><br>
+    </div>
+
+    <div class="form-row">
+      <label for="results-list">Results Distribution List / Main:</label>
+      <input name="results-list" required><br>
+    </div>
+    <div class="form-row">
+      <label for="results-cc-list">Results Distribution List / CC:</label>
+      <input name="results-cc-list" required><br>
+    </div>
+
+    <div class="form-row">
+      <label for="po-number">PO Number:</label>
+      <input name="po-number" required><br>
+    </div>
+    <div class="form-row">
+      <label for="cc-number">Credit Card Number (last 4 digits and name):</label>
+      <input name="cc-number" required><br>
+    </div>
+
+    <div class="form-row">
+      <label for="invoice-list">Invoice Distribution List / Main:</label>
+      <input name="invoice-list" required><br>
+    </div>
+    <div class="form-row">
+      <label for="invoice-cc-list">Invoice Distribution List / CC:</label>
+      <input name="invoice-cc-list" required><br>
+    </div>
+
+    <div id="samples">
+      <div class="sample-row">
+        <input name="sample_id[]" placeholder="Sample ID" required>
+        <input name="chemical_matrix[]" placeholder="Chemical Matrix" required>
+        <select name="analysis[0][]" class="analysis-select" multiple="multiple">
+          <optgroup label="Anion Panels">
+            <option value="5_anions" title="F-, Cl-, NO3-, SO4--, PO4---">5 Anions</option>
+            <option value="organic_anions" title="Gluconate, Propionate, Butanate">Organic Anions</option>
+          </optgroup>
+          <optgroup label="Metals">
+            <option value="36_elements" title="Al, As, Ba, Cd...">36 Elements</option>
+            <option value="heavy_metals" title="Pb, Hg, Cr...">Heavy Metals</option>
+          </optgroup>
+        </select>
+        <input name="procesing_time[]" placeholder="Processing Time" required>
+      </div>
+    </div>
+
+    <button type="button" onclick="addSample()">+ Add Sample</button><br>
+    <button type="submit">Submit</button>
+  </form>
+</body>
+</html>

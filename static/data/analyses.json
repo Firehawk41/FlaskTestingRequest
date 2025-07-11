@@ -1,0 +1,16 @@
+[
+  {
+    "group": "Anion Panels",
+    "options": [
+      { "id": "5_anions", "label": "5 Anions", "description": "F-, Cl-, NO3-, SO4--, PO4---" },
+      { "id": "organic_anions", "label": "Organic Anions", "description": "Gluconate, Propionate..." }
+    ]
+  },
+  {
+    "group": "Metals",
+    "options": [
+      { "id": "36_elements", "label": "36 Elements", "description": "Al, As, Ba, Cd..." },
+      { "id": "heavy_metals", "label": "Heavy Metals", "description": "Pb, Hg, Cr..." }
+    ]
+  }
+]

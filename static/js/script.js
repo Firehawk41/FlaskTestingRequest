@@ -82,6 +82,7 @@ document.getElementById("sampleForm").addEventListener("submit", async (e) => {
       data[key] = value;
     }
   }
+
   // Send data to Flask route
   const response = await fetch("/submit", {
     method: "POST",
@@ -97,7 +98,16 @@ document.addEventListener("DOMContentLoaded", function () {
   $('.analysis-select').select2({
     placeholder: "Select analyses",
     width: '100%',
-    allowClear: true
+    allowClear: true,
+    templateRseult: function (data) {
+      if (!data.id) return data.text; // For placeholder or group labels
+
+      // data.element is the original <option> DOM element
+      const description = $(data.element).attr('title') || '';
+
+      // Create a span with a title attribute for native browser tooltip
+      return $('<span>').text(data.text).attr('title', description);
+    }
   });
 });
 

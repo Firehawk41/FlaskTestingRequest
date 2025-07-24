@@ -118,7 +118,7 @@ async function createAnalysisDropdown(index, sampleType) {
         const option = document.createElement("option");
         option.value = opt.id;
         option.textContent = opt.label;
-        option.title = opt.description;
+        option.title = opt.long_description;
         optgroup.appendChild(option);
       });
 
@@ -192,3 +192,73 @@ document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
     }
   });
 });
+
+// Store form data for confirmation
+let pendingFormData = null;
+
+// Intercept form submission
+document.getElementById("sampleForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  // Collect form data
+  const formData = new FormData(e.target);
+
+  // Gather sample arrays
+  const sampleIds = formData.getAll("sample_id[]");
+  const matrices = formData.getAll("chemical_matrix[]");
+  const types = formData.getAll("sample_type[]");
+  const times = formData.getAll("processing_time[]");
+  const analyses = [];
+  let i = 0;
+  while (formData.has(`analysis[${i}][]`)) {
+    analyses.push(formData.getAll(`analysis[${i}][]`));
+    i++;
+  }
+
+  // Build samples array
+  const samples = sampleIds.map((id, idx) => ({
+    sample_id: id,
+    chemical_matrix: matrices[idx],
+    sample_type: types[idx],
+    processing_time: times[idx],
+    analyses: analyses[idx] || []
+  }));
+
+  // Gather other fields
+  const data = {
+    customer_phone: formData.get("customer-phone"),
+    results_list: formData.get("results-list"),
+    results_cc_list: formData.get("results-cc-list"),
+    payment_method: formData.get("payment_method"),
+    po_number: formData.get("po-number"),
+    cc_number: formData.get("cc-number"),
+    samples: samples
+  };
+
+  // Save for later submission
+  pendingFormData = data;
+
+  // Show modal with JSON summary
+  document.getElementById("jsonSummary").textContent = JSON.stringify(data, null, 2);
+  document.getElementById("confirmationModal").style.display = "block";
+});
+
+// Confirm button submits to server
+document.getElementById("confirmBtn").onclick = async function() {
+  document.getElementById("confirmationModal").style.display = "none";
+  // Submit to backend
+  const res = await fetch("/submit", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(pendingFormData)
+  });
+  const result = await res.json();
+  alert(result.message);
+  pendingFormData = null;
+};
+
+// Cancel button hides modal
+document.getElementById("cancelBtn").onclick = function() {
+  document.getElementById("confirmationModal").style.display = "none";
+  pendingFormData = null;
+};

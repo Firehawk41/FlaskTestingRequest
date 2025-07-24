@@ -103,5 +103,14 @@
     <button type="button" onclick="addSample()">+ Add Sample</button><br>
     <button type="submit">Submit</button>
   </form>
+  <!-- Modal Confirmation (hidden by default) -->
+  <div id="confirmationModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:1000;">
+    <div style="background:#fff; margin:10vh auto; padding:2em; width:400px; border-radius:8px;">
+      <h2>Review Your Submission</h2>
+      <pre id="jsonSummary" style="max-height:300px; overflow:auto; background:#eee; padding:1em;"></pre>
+      <button id="confirmBtn" type="button">Confirm & Submit</button>
+      <button id="cancelBtn" type="button">Cancel</button>
+    </div>
+  </div>
 </body>
 </html>
